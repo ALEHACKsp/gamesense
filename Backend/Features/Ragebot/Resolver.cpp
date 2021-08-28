@@ -10,6 +10,18 @@ inline float clamp_yaw(float yaw)
 		yaw += 360.f;
 	return yaw;
 }
+
+bool c_resolver::ajusting_balance(CBaseEntity* e) {
+
+	for (int i = 0; i < e->GetNumAnimOverlays(); i++)
+	{
+		const int activity = e->GetSequenceActivity(e->GetAnimOverlay(i).m_nSequence);
+		if (activity == 979)
+			return true;
+	}
+	return false;
+}
+
 void c_resolver::run() {
 	if (!c_config::get()->b["rage_resolver"])
 		return;
@@ -23,7 +35,7 @@ void c_resolver::run() {
 				}
 				else if (e->GetFlags() & FL_ONGROUND) {
 
-					if (G::MissedShots[i] == 0) {
+					if (G::MissedShots1[i] == 0) {
 						if (this->ajusting_balance(e)) {
 							stored_yaws[i] = e->GetLowerBodyYaw();
 							did_store_yaw[i] = true;
@@ -32,9 +44,9 @@ void c_resolver::run() {
 						if (did_store_yaw[i])
 							e->GetEyeAnglesPtr()->y = stored_yaws[i];
 					}
-					else if (G::MissedShots[i] == 2)
+					else if (G::MissedShots1[i] == 2)
 						e->GetEyeAnglesPtr()->y = stored_yaws[i];
-					else if (G::MissedShots[i] > 2) {
+					else if (G::MissedShots1[i] > 2) {
 						auto f = stored_yaws[i];
 						if (f > 0)
 							e->GetEyeAnglesPtr()->y = f + (G::ResolverAdd[i] / 2); // òóò 
@@ -42,7 +54,7 @@ void c_resolver::run() {
 							e->GetEyeAnglesPtr()->y = f - (G::ResolverAdd[i] / 2); // è òóò 
 						}
 						else {
-							switch (G::MissedShots[i] % 2) {
+							switch (G::MissedShots1[i] % 2) {
 							case 0:
 								e->GetEyeAnglesPtr()->y = f - (G::ResolverAdd[i] / 2);
 								break;
@@ -56,14 +68,14 @@ void c_resolver::run() {
 				}
 			}
 			else {
-				G::MissedShots[i] = 0;
+				G::MissedShots1[i] = 0;
 				G::ResolverAdd[i] = 0;
 
 				did_store_yaw[i] = false;
 			}
 		}
 		else {
-			G::MissedShots[i] = 0;
+			G::MissedShots1[i] = 0;
 			G::ResolverAdd[i] = 0;
 
 			did_store_yaw[i] = false;
@@ -164,7 +176,7 @@ void c_resolver::Resolver(CBaseEntity* player)
 						side = -1;
 				}
 
-				switch (G::MissedShots[i] % 4)
+				switch (G::MissedShots1[i] % 4)
 				{
 				case 0:
 					side = +player->GetMaxDesyncDelta();
@@ -184,4 +196,15 @@ void c_resolver::Resolver(CBaseEntity* player)
 			}
 		}
 	}
+}
+
+void c_resolver::FrameStage(ClientFrameStage_t stage) {
+	if (stage == FRAME_RENDER_START){
+		// do nothing
+		// just example code for later xd.
+	}
+}
+
+void c_resolver::HandleHits() {
+	
 }

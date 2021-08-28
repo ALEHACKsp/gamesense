@@ -405,12 +405,12 @@ namespace Cheat
 					if (G::MissingDueToSpread) {
 						if (G::RagebotTarget) {
 							if (G::RagebotTarget->IsAlive()) {
-								/*G::MissedShots[G::RagebotTarget->GetIndex()]++;
+								/*G::MissedShots1[G::RagebotTarget->GetIndex()]++;
 								G::ResolverAdd[G::RagebotTarget->GetIndex()] += 35.f;*/
 								Cheat::Utilities->Math_NormalizeYaw(G::ResolverAdd[G::RagebotTarget->GetIndex()]);
 							}
 							else {
-								/*G::MissedShots[G::RagebotTarget->GetIndex()] = 0;
+								/*G::MissedShots1[G::RagebotTarget->GetIndex()] = 0;
 								G::ResolverAdd[G::RagebotTarget->GetIndex()] = 0;*/
 							}
 						}

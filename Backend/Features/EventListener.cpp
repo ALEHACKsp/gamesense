@@ -346,7 +346,7 @@ void CGameEvents::FireGameEvent(IGameEvent* game_event)
 		auto userid = Interfaces::Engine->GetPlayerForUserID(game_event->GetInt(xorstr_("userid")));
 
 		auto shotPlayer = Interfaces::EntityList->GetClientEntity(userid)->GetIndex();
-		//G::MissedShots[shotPlayer]--;
+		//G::MissedShots1[shotPlayer]--;
 
 		if (G::RagebotTarget && G::LocalPlayer->GetIndex() == userid && G::RagebotIsShooting) {
 			G::MissingDueToSpread = true;
