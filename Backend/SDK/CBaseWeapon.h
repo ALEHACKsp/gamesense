@@ -28,6 +28,7 @@ struct CSWeaponInfo
 	__int32 damage;             //0x00F0
 	float armor_ratio;          //0x00F4
 	__int32 bullets;            //0x00F8
+	char updatefix[4];          //not sure xd
 	float penetration;          //0x00FC
 	char _0x0100[8];
 	float range;                //0x0108
@@ -830,17 +831,15 @@ class CBaseWeapon
 			if ( this && this != NULL && this != nullptr )
 			{
 				typedef CSWeaponInfo *( __thiscall * fn )( void* );
-				return vfunc<fn>( this, 460)( this );
+				return vfunc<fn>( this, 461)( this );
 			}
 		}
 		CSWeaponInfo * get_csweapon_info() {
-			if (!this || this == NULL)
-				return NULL;
-
-			using Fn = CSWeaponInfo * (__thiscall*)(void*);
-
-			static auto fn = reinterpret_cast<Fn>(Utilities->Memory_PatternScan("client.dll", "55 8B EC 81 EC ? ? ? ? 53 8B D9 56 57 8D 8B ? ? ? ? 85 C9 75 04 33 FF EB 2F"));
-			return fn(this);
+			if (this && this != NULL && this != nullptr)
+			{
+				typedef CSWeaponInfo* (__thiscall* fn)(void*);
+				return vfunc<fn>(this, 461)(this);
+			}
 		}
 
 		int Type()

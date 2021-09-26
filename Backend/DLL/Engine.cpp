@@ -26,6 +26,7 @@
 #include "../Hooking/Functions/FireEvent.hpp"
 #include "../Hooking/Functions/StandardBlendingRules.hpp"
 #include <detours.h>
+#include "../../detours/detours.h"
 //#include "../Hooking/Functions/StandartBlendingRules.h"
 
 DWORD OriginalDoExtraBonesProcessing;
@@ -93,7 +94,7 @@ void SetupOffsets()
 	offys.m_bHasHeavyArmor = nv( xorstr_("CCSPlayer"), xorstr_("m_bHasHeavyArmor") );
 	offys.m_bPinPulled = nv( xorstr_("CBaseCSGrenade"), xorstr_("m_bPinPulled") );
 	offys.m_fThrowTime = nv( xorstr_("CBaseCSGrenade"), xorstr_("m_fThrowTime") );
-	offys.dwReloading = Cheat::Utilities->Memory_PatternScan(Cheat::Settings->ClientDLL, xorstr_("C6 87 ? ? ? ? ? 8B 06 8B CE FF 90")) + 2;
+	offys.dwReloading = Cheat::Utilities->Memory_PatternScan(Cheat::Settings->ClientDLL, xorstr_("C6 87 ? ? ? ? ? 8B 06 8B CE FF 90")) + 2; // here crashing
 	offys.m_flNextSecondaryAttack = nv( xorstr_("CBaseCombatWeapon"), xorstr_("m_flNextSecondaryAttack") );
 	offys.dwPlayerResource = *( DWORD* )( Cheat::Utilities->Memory_PatternScan( Cheat::Settings->ClientDLL, xorstr_("8B 3D ? ? ? ? 85 FF 0F 84 ? ? ? ? 81 C7") ) + 2 );
 	offys.dwGetSequenceActivity = Cheat::Utilities->Memory_PatternScan( Cheat::Settings->ClientDLL, xorstr_("55 8B EC 53 8B 5D 08 56 8B F1 83") );
@@ -237,15 +238,15 @@ bool Cheat::Initialize()
 		oOverrideView = G::ClientModeManager.GetOriginal<fnOverrideView>( 18 );
 
 		static auto dwDoExtraBonesProcessing = (DWORD)((Utilities->Memory_PatternScan("client.dll", "55 8B EC 83 E4 F8 81 EC ? ? ? ? 53 56 8B F1 57 89 74 24 1C")));
-		static auto dwShouldSkipAnimFrame = (DWORD)(Utilities->Memory_PatternScan("client.dll", "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02 5F C3"));
+		static auto dwShouldSkipAnimFrame = (DWORD)(Utilities->Memory_PatternScan("client.dll", "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02")); // 57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02
 		// static auto dwStandardBlendingRules = (DWORD)(Utilities->Memory_PatternScan("client.dll", "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 8B 75 08 57 8B F9 85 F6"));
-		static auto dwMove = (DWORD)((Utilities->Memory_PatternScan("engine.dll", "55 8B EC 81 EC ? ? ? ? 53 56 57 8B 3D ? ? ? ? 8A")));
+		static auto dwMove = (DWORD)((Utilities->Memory_PatternScan("engine.dll", "55 8B EC 81 EC 64 01 00 00 53 56 8A F9")));
 
 
 		OriginalDoExtraBonesProcessing = (DWORD)DetourFunction((byte*)dwDoExtraBonesProcessing, (byte*)Hooked::DoExtraBonesProcessing);
 		OriginalShouldSkipAnimFrame = (DWORD)DetourFunction((byte*)dwShouldSkipAnimFrame, (byte*)Hooked::ShouldSkipAnimFrame);
 		// oStandardBlendingRules = (fnStandardBlendingRules)DetourFunction((PBYTE)dwStandardBlendingRules, (PBYTE)Hooked::StandardBlendingRules);
-		oMove = (MoveFn)DetourFunction((PBYTE)dwMove, (PBYTE)Hooked::Move);
+		// oMove = (MoveFn)DetourFunction((PBYTE)dwMove, (PBYTE)Hooked::Move);
 
 		Utilities->Console_Log(xorstr_("Hooking NetVars (1/1)"));
 		NetVarManager->hookProp("CBaseViewModel", "m_nSequence", SequenceHook, oSequence);

@@ -96,8 +96,8 @@ namespace Cheat
 								Interfaces::Engine->GetScreenSize( w, h );
 
 								int gOffy = h / 2 / 2;
-								Drawing->Line(w / 2, 0, w / 2, h, CColor(0, 0, 0, 255));
-								Drawing->Line(0, h / 2, w, h / 2, CColor(0, 0, 0, 255));
+								/*Drawing->Line(w / 2, 0, w / 2, h, CColor(0, 0, 0, 255));
+								Drawing->Line(0, h / 2, w, h / 2, CColor(0, 0, 0, 255));*/
 							}
 
 							if (c_config::get()->b["rage_quickpeek"] && c_keyhandler::get()->auto_check("rage_quickpeek_key")) {
@@ -112,7 +112,10 @@ namespace Cheat
 										auto clr = c_config::get()->c["rage_quickpeek_color"];
 										if (Utilities->Game_WorldToScreen(Vector(lineX, lineY, G::quickpeekstartpos.z), coords) && screen_x_line_old && screen_y_line_old)
 											Drawing->Line(coords.x, coords.y, screen_x_line_old, screen_y_line_old, CColor(clr[0], clr[1], clr[2], clr[3]));
-
+										else {
+											std::string error = "ERROR DRAWING LINE";
+											Drawing->Text(0, 0, error.c_str(), Drawing->fonts.eventlogs, CColor(clr[0], clr[1], clr[2], clr[3]));
+										}
 										screen_x_line_old = coords.x;
 										screen_y_line_old = coords.y;
 									}

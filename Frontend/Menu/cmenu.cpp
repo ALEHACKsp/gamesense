@@ -1186,6 +1186,7 @@ void c_menu::draw() {
 		ui::SetNextWindowPos(calculateChildWindowPositionDouble(1));
 		ui::BeginChild("Lua", child_size);
 		ui::Checkbox("Enabled", &cfg->b["Active"]); dmt("Active");
+		ui::Checkbox("Dev mode", &cfg->b["lua_devmode"]); dmt("lua_devmode");
 		ui::Checkbox("Allow unsafe scripts", &cfg->b["Allow"]); dmt("Allow");
 		if (ui::Button("Reload active scripts"))
 			c_lua::get()->reload_all_scripts();

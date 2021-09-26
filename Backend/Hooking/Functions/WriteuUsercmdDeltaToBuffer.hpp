@@ -79,15 +79,14 @@ namespace Cheat
                 return false;
             }*/
 
-            auto p_new_commands = (int*)(reinterpret_cast <uintptr_t> (buf) - 0x2C);
-            auto p_backup_commands = (int*)(reinterpret_cast <uintptr_t> (buf) - 0x30);
+            auto p_new_commands = (int*)((DWORD)buf - 0x2C);
+            auto p_backup_commands = (int*)((DWORD)buf - 0x30);
             auto new_commands = *p_new_commands;
 
             auto channel = Interfaces::ClientState->pNetChannel;
 
             if (G::TickbaseShift > 0) {
-                auto next_cmd_nr =
-                    *(int*)((DWORD_PTR)Interfaces::ClientState + 0x4D24) + *(int*)((DWORD_PTR)Interfaces::ClientState + 0x4D28) + 1;
+                auto next_cmd_nr = Interfaces::ClientState->nLastOutgoingCommand + Interfaces::ClientState->iChokedCommands + 1;
                 auto total_new_commands = clamp(G::TickbaseShift, 0, 16);
 
                 G::TickbaseShift -= total_new_commands;
@@ -115,14 +114,16 @@ namespace Cheat
                 memcpy(&to_cmd, &from_cmd, sizeof(CUserCmd));
 
                 to_cmd.command_number++;
-                to_cmd.tick_count++;
+                to_cmd.tick_count += 200;
 
                 for (int i = new_commands; i <= total_new_commands; i++) {
 
                     write_usercmd(buf, &to_cmd, &from_cmd);
                     memcpy(&from_cmd, &to_cmd, sizeof(CUserCmd));
-                    to_cmd.command_number++;
-                    to_cmd.tick_count++;
+                    to_cmd.command_number--;
+                    to_cmd.tick_count--;
+                    from_cmd.command_number++;
+                    from_cmd.tick_count++;
                 }
 
                 //*(int*)((DWORD_PTR)Interfaces::ClientState + 0x4D24) += total_new_commands;
